@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { REFRESH_TOKEN_SECRET } from '../constants.js'
 import jwt from 'jsonwebtoken';
+import { sendmail } from "../utils/email.js";
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
@@ -90,6 +91,12 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!createdUser) {
         throw new ApiError(500, "Something went wrong while registering the user")
     }
+
+    await sendmail(email,
+        "Welcome to our application, hope it would be helpful",
+        `
+    <h2>Welcome, ${username}</h2>`
+    )
 
     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered Successfully")
@@ -396,7 +403,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         )
 })
 
-const getWatchHistory = asyncHandler(async(req, res) => {
+const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
         {
             $match: {
@@ -428,8 +435,8 @@ const getWatchHistory = asyncHandler(async(req, res) => {
                         }
                     },
                     {
-                        $addFields:{
-                            owner:{
+                        $addFields: {
+                            owner: {
                                 $first: "$owner"
                             }
                         }
@@ -440,14 +447,14 @@ const getWatchHistory = asyncHandler(async(req, res) => {
     ])
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            user[0].watchHistory,
-            "Watch history fetched successfully"
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user[0].watchHistory,
+                "Watch history fetched successfully"
+            )
         )
-    )
 })
 
 export {
