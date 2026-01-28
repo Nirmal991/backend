@@ -1,21 +1,14 @@
 import { createTransport } from "nodemailer";
-import {
-    NAME,
-    SMTP_HOST,
-    SMTP_PASS,
-    SMTP_PORT,
-    SMTP_SECURE,
-    SMTP_USER,
-} from '../constants.js';
+
 
 export const transport = createTransport({
     service: 'gmail',
-    host: SMTP_HOST,
-    secure: SMTP_SECURE,
-    port: SMTP_PORT,
+    host: process.env.SMTP_HOST,
+    secure: process.env.SMTP_SECURE,
+    port: process.env.SMTP_PORT,
     auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
     },
 })
 
